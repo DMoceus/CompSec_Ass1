@@ -59,6 +59,29 @@ long leftShift(long a, long b){
 }
 
 int rightShift(int a, int b){
+	long long aLong = a;
+	int numBits = log2(WORD_SIZE);
+	int shiftCountMask = 0b0;
+	for(int i=0; i<numBits; i++){
+		shiftCountMask = (shiftCountMask << 1);
+		shiftCountMask++;
+	}
+	int shiftCount = b & shiftCountMask;
+	long maskA = 0b0;
+	long maskB = 0b0;
+	for(int i=0; i<(WORD_SIZE-shiftCount); i++){
+		maskA = (maskA << 1);
+		maskA++;
+	}
+	for(int i=0; i<shiftCount; i++){
+		maskB = (maskB << 1);
+		maskB++;
+	}
+	
+	long remainder = (aLong >> shiftCount) & maskA;
+	long cutoff = (aLong & maskB);
+	cutoff = (cutoff << (WORD_SIZE-shiftCount));
+	return cutoff | remainder;
 	
 }
 
@@ -69,5 +92,10 @@ int main(int argc, char** argv){
 	cout << temp << endl;
 	long temp2 = leftShift(temp,shiftAmount);
 	cout << temp2 << endl;
+	
+	long rightShiftTest = 0b11110000111100001111000011110000;
+	cout << rightShiftTest << endl;
+	long rightShiftResult = rightShift(rightShiftTest,shiftAmount);
+	cout << rightShiftResult << endl;
 	return 0;
 }
