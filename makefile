@@ -1,4 +1,4 @@
-GPP = g++ -g
+GPP = g++ -g -std=c++11
 
 all: RC6
 
