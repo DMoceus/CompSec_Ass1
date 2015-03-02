@@ -103,6 +103,11 @@ void keySchedule(string inKey){
 	int inKeyBytes = inKey.length()/2;
 	if(inKeyBytes == 16){
 		L = (long*)malloc(4*32);
+/*		L[0] = stol(inKey.substr(0,8),NULL,16);
+		L[1] = stol(inKey.substr(8,8),NULL,16);
+		L[2] = stol(inKey.substr(16,8),NULL,16);
+		L[3] = stol(inKey.substr(24,8),NULL,16);
+*/
 		L[0] = lilEndian32Swap(stol(inKey.substr(0,8), NULL,16));
 		L[1] = lilEndian32Swap(stol(inKey.substr(8,8), NULL,16));
 		L[2] = lilEndian32Swap(stol(inKey.substr(16,8),NULL,16));
@@ -110,15 +115,32 @@ void keySchedule(string inKey){
 	}
 	else if(inKeyBytes == 24){
 		L = (long*)malloc(6*32);
+/*		L[0] = stol(inKey.substr(0,8),NULL,16);
+		L[1] = stol(inKey.substr(8,8),NULL,16);
+		L[2] = stol(inKey.substr(16,8),NULL,16);
+		L[3] = stol(inKey.substr(24,8),NULL,16);
+		L[4] = stol(inKey.substr(32,8),NULL,16);
+		L[5] = stol(inKey.substr(40,8),NULL,16);
+*/
 		L[0] = lilEndian32Swap(stol(inKey.substr(0,8), NULL,16));
 		L[1] = lilEndian32Swap(stol(inKey.substr(8,8), NULL,16));
 		L[2] = lilEndian32Swap(stol(inKey.substr(16,8),NULL,16));
 		L[3] = lilEndian32Swap(stol(inKey.substr(24,8),NULL,16));
 		L[4] = lilEndian32Swap(stol(inKey.substr(32,8),NULL,16));
 		L[5] = lilEndian32Swap(stol(inKey.substr(40,8),NULL,16));
+
 	}
 	else if(inKeyBytes == 32){
 		L = (long*)malloc(8*32);
+/*		L[0] = stol(inKey.substr(0,8),NULL,16);
+		L[1] = stol(inKey.substr(8,8),NULL,16);
+		L[2] = stol(inKey.substr(16,8),NULL,16);
+		L[3] = stol(inKey.substr(24,8),NULL,16);
+		L[4] = stol(inKey.substr(32,8),NULL,16);
+		L[5] = stol(inKey.substr(40,8),NULL,16);
+		L[6] = stol(inKey.substr(48,8),NULL,16);
+		L[7] = stol(inKey.substr(56,8),NULL,16);
+*/
 		L[0] = lilEndian32Swap(stol(inKey.substr(0,8), NULL,16));
 		L[1] = lilEndian32Swap(stol(inKey.substr(8,8), NULL,16));
 		L[2] = lilEndian32Swap(stol(inKey.substr(16,8),NULL,16));
@@ -127,6 +149,7 @@ void keySchedule(string inKey){
 		L[5] = lilEndian32Swap(stol(inKey.substr(40,8),NULL,16));
 		L[6] = lilEndian32Swap(stol(inKey.substr(48,8),NULL,16));
 		L[7] = lilEndian32Swap(stol(inKey.substr(56,8),NULL,16));
+
 	}
 	else{
 		cout << "ERROR WITH KEYS\n";
