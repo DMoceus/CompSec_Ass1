@@ -1,3 +1,0 @@
-Decryption
-ciphertext: 69 b2 5a aa d2 01 62 02 68 92 cc 92 53 71 ff 86
-user key: 01 23 45 67 89 ab cd ef 01 12 23 34 45 56 67 78

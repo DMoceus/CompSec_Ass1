@@ -16,31 +16,31 @@ string removeWhiteSpace(string input);
 void scanInput(string input);
 void decrypt();
 void encrypt();
-long rightShift(long a, long b);
-long leftShift(long a, long b);
-long multMod(long a, long b);
-long subMod(long a, long b);
-long addMod(long a, long b);
-long long lilEndian32Swap(long long input);
+unsigned long rightShift(unsigned long a, unsigned long b);
+unsigned long leftShift(unsigned long a, unsigned long b);
+unsigned long multMod(unsigned long a,unsigned  long b);
+unsigned long subMod(unsigned long a,unsigned  long b);
+unsigned long addMod(unsigned long a,unsigned  long b);
+unsigned long lilEndian32Swap(unsigned long input);
 void keySchedule(string inKey);
 
-long* S;
-long* L;
-long inA;
-long inB;
-long inC;
-long inD;
+unsigned long* S;
+unsigned long* L;
+unsigned long inA;
+unsigned long inB;
+unsigned long inC;
+unsigned long inD;
 
 void scanInput(string input){
-	inA = stol(input.substr(0, 8),NULL,16);
-	inB = stol(input.substr(8, 8),NULL,16);
-	inC = stol(input.substr(16,8),NULL,16);
-	inD = stol(input.substr(24,8),NULL,16);
+	inA = stoul(input.substr(0, 8),NULL,16);
+	inB = stoul(input.substr(8, 8),NULL,16);
+	inC = stoul(input.substr(16,8),NULL,16);
+	inD = stoul(input.substr(24,8),NULL,16);
 }
 
 void decrypt(){
-	int t,u;
-	long temp1, temp2, temp3, temp4;
+	unsigned int t,u;
+	unsigned long temp1, temp2, temp3, temp4;
 	inC = subMod(inC,S[(2*ROUND_COUNT)+3]);
 	inA = subMod(inA,S[(2*ROUND_COUNT)+2]);
 	for(int i=ROUND_COUNT; i>0; i--){
@@ -65,11 +65,11 @@ void decrypt(){
 }
 
 void encrypt(){
-	int t,u;
-	long temp1, temp2, temp3, temp4;
+	unsigned int t,u;
+	unsigned long temp1, temp2, temp3, temp4;
 	inB = addMod(inB,S[0]);
 	inD = addMod(inD,S[1]);
-	for(int i=0;i<(ROUND_COUNT+1);i++){
+	for(int i=1;i<(ROUND_COUNT+1);i++){
 		t = leftShift(multMod(inB,addMod(2*inB,1)),log2(WORD_SIZE));
 		u = leftShift(multMod(inD,addMod(2*inD,1)),log2(WORD_SIZE));
 		inA = addMod(leftShift((inA^t),u),S[2*i]);
@@ -91,79 +91,103 @@ void encrypt(){
 	inC = addMod(inC,S[(2*ROUND_COUNT)+3]);
 }
 
-long long lilEndian32Swap(long long input){
-	long long inBlock1 = (input >> 24) &  0x000000FF;
-	long long inBlock2 = (input >> 8)  &  0x0000FF00;
-	long long inBlock3 = (input << 8)  &  0x00FF0000;
-	long long inBlock4 = (input << 24) &  0xFF000000;
+unsigned long lilEndian32Swap(unsigned  long input){
+	unsigned long inBlock1 = (input >> 24) &  0x000000FF;
+	unsigned long inBlock2 = (input >> 8)  &  0x0000FF00;
+	unsigned long inBlock3 = (input << 8)  &  0x00FF0000;
+	unsigned long inBlock4 = (input << 24) &  0xFF000000;
 	return inBlock1 | inBlock2 | inBlock3 | inBlock4;
 }
 
 void keySchedule(string inKey){
-	int inKeyBytes = inKey.length()/2;
+	unsigned int inKeyBytes = inKey.length()/2;
 	if(inKeyBytes == 16){
-		L = (long*)malloc(4*32);
-/*		L[0] = stol(inKey.substr(0,8),NULL,16);
-		L[1] = stol(inKey.substr(8,8),NULL,16);
-		L[2] = stol(inKey.substr(16,8),NULL,16);
-		L[3] = stol(inKey.substr(24,8),NULL,16);
+		L = (unsigned long*)malloc(4*32);
+/*		L[0] = stoul(inKey.substr(0,8),NULL,16);
+		L[1] = stoul(inKey.substr(8,8),NULL,16);
+		L[2] = stoul(inKey.substr(16,8),NULL,16);
+		L[3] = stoul(inKey.substr(24,8),NULL,16);
 */
-		L[0] = lilEndian32Swap(stol(inKey.substr(0,8), NULL,16));
-		L[1] = lilEndian32Swap(stol(inKey.substr(8,8), NULL,16));
-		L[2] = lilEndian32Swap(stol(inKey.substr(16,8),NULL,16));
-		L[3] = lilEndian32Swap(stol(inKey.substr(24,8),NULL,16));
+		L[0] = lilEndian32Swap(stoul(inKey.substr(0,8), NULL,16));
+		L[1] = lilEndian32Swap(stoul(inKey.substr(8,8), NULL,16));
+		L[2] = lilEndian32Swap(stoul(inKey.substr(16,8),NULL,16));
+		L[3] = lilEndian32Swap(stoul(inKey.substr(24,8),NULL,16));
+cout << "L[0]: " << hex << L[0] << endl;
+cout << "L[1]: " << hex << L[1] << endl;
+cout << "L[2]: " << hex << L[2] << endl;
+cout << "L[3]: " << hex << L[3] << endl;
 	}
 	else if(inKeyBytes == 24){
-		L = (long*)malloc(6*32);
-/*		L[0] = stol(inKey.substr(0,8),NULL,16);
-		L[1] = stol(inKey.substr(8,8),NULL,16);
-		L[2] = stol(inKey.substr(16,8),NULL,16);
-		L[3] = stol(inKey.substr(24,8),NULL,16);
-		L[4] = stol(inKey.substr(32,8),NULL,16);
-		L[5] = stol(inKey.substr(40,8),NULL,16);
+		L = (unsigned long*)malloc(6*32);
+/*		L[0] = stoul(inKey.substr(0,8),NULL,16);
+		L[1] = stoul(inKey.substr(8,8),NULL,16);
+		L[2] = stoul(inKey.substr(16,8),NULL,16);
+		L[3] = stoul(inKey.substr(24,8),NULL,16);
+		L[4] = stoul(inKey.substr(32,8),NULL,16);
+		L[5] = stoul(inKey.substr(40,8),NULL,16);
 */
-		L[0] = lilEndian32Swap(stol(inKey.substr(0,8), NULL,16));
-		L[1] = lilEndian32Swap(stol(inKey.substr(8,8), NULL,16));
-		L[2] = lilEndian32Swap(stol(inKey.substr(16,8),NULL,16));
-		L[3] = lilEndian32Swap(stol(inKey.substr(24,8),NULL,16));
-		L[4] = lilEndian32Swap(stol(inKey.substr(32,8),NULL,16));
-		L[5] = lilEndian32Swap(stol(inKey.substr(40,8),NULL,16));
+		L[0] = lilEndian32Swap(stoul(inKey.substr(0,8), NULL,16));
+		L[1] = lilEndian32Swap(stoul(inKey.substr(8,8), NULL,16));
+		L[2] = lilEndian32Swap(stoul(inKey.substr(16,8),NULL,16));
+		L[3] = lilEndian32Swap(stoul(inKey.substr(24,8),NULL,16));
+		L[4] = lilEndian32Swap(stoul(inKey.substr(32,8),NULL,16));
+		L[5] = lilEndian32Swap(stoul(inKey.substr(40,8),NULL,16));
 
+cout << "L[0]: " << hex << L[0] << endl;
+cout << "L[1]: " << hex << L[1] << endl;
+cout << "L[2]: " << hex << L[2] << endl;
+cout << "L[3]: " << hex << L[3] << endl;
+cout << "L[4]: " << hex << L[4] << endl;
+cout << "L[5]: " << hex << L[5] << endl;
 	}
 	else if(inKeyBytes == 32){
-		L = (long*)malloc(8*32);
-/*		L[0] = stol(inKey.substr(0,8),NULL,16);
-		L[1] = stol(inKey.substr(8,8),NULL,16);
-		L[2] = stol(inKey.substr(16,8),NULL,16);
-		L[3] = stol(inKey.substr(24,8),NULL,16);
-		L[4] = stol(inKey.substr(32,8),NULL,16);
-		L[5] = stol(inKey.substr(40,8),NULL,16);
-		L[6] = stol(inKey.substr(48,8),NULL,16);
-		L[7] = stol(inKey.substr(56,8),NULL,16);
+		L = (unsigned long*)malloc(8*32);
+/*		L[0] = stoul(inKey.substr(0,8),NULL,16);
+		L[1] = stoul(inKey.substr(8,8),NULL,16);
+		L[2] = stoul(inKey.substr(16,8),NULL,16);
+		L[3] = stoul(inKey.substr(24,8),NULL,16);
+		L[4] = stoul(inKey.substr(32,8),NULL,16);
+		L[5] = stoul(inKey.substr(40,8),NULL,16);
+		L[6] = stoul(inKey.substr(48,8),NULL,16);
+		L[7] = stoul(inKey.substr(56,8),NULL,16);
 */
-		L[0] = lilEndian32Swap(stol(inKey.substr(0,8), NULL,16));
-		L[1] = lilEndian32Swap(stol(inKey.substr(8,8), NULL,16));
-		L[2] = lilEndian32Swap(stol(inKey.substr(16,8),NULL,16));
-		L[3] = lilEndian32Swap(stol(inKey.substr(24,8),NULL,16));
-		L[4] = lilEndian32Swap(stol(inKey.substr(32,8),NULL,16));
-		L[5] = lilEndian32Swap(stol(inKey.substr(40,8),NULL,16));
-		L[6] = lilEndian32Swap(stol(inKey.substr(48,8),NULL,16));
-		L[7] = lilEndian32Swap(stol(inKey.substr(56,8),NULL,16));
+		L[0] = lilEndian32Swap(stoul(inKey.substr(0,8), NULL,16));
+		L[1] = lilEndian32Swap(stoul(inKey.substr(8,8), NULL,16));
+		L[2] = lilEndian32Swap(stoul(inKey.substr(16,8),NULL,16));
+		L[3] = lilEndian32Swap(stoul(inKey.substr(24,8),NULL,16));
+		L[4] = lilEndian32Swap(stoul(inKey.substr(32,8),NULL,16));
+		L[5] = lilEndian32Swap(stoul(inKey.substr(40,8),NULL,16));
+		L[6] = lilEndian32Swap(stoul(inKey.substr(48,8),NULL,16));
+		L[7] = lilEndian32Swap(stoul(inKey.substr(56,8),NULL,16));
 
+cout << "L[0]: " << hex << L[0] << endl;
+cout << "L[1]: " << hex << L[1] << endl;
+cout << "L[2]: " << hex << L[2] << endl;
+cout << "L[3]: " << hex << L[3] << endl;
+cout << "L[4]: " << hex << L[4] << endl;
+cout << "L[5]: " << hex << L[5] << endl;
+cout << "L[6]: " << hex << L[6] << endl;
+cout << "L[7]: " << hex << L[7] << endl;
 	}
 	else{
 		cout << "ERROR WITH KEYS\n";
 		exit(-1);
 	}
-	S = (long*)malloc(WORD_SIZE*((2*ROUND_COUNT)+4));
+	S = (unsigned long*)malloc(WORD_SIZE*((2*ROUND_COUNT)+4));
 	S[0] = P32;
-	int i,j,v;
-	long A,B;
+	unsigned int i,j,v;
+	unsigned long A,B;
 	for(i=1;i<((2*ROUND_COUNT)+4);i++){
 		S[i] = addMod(S[i-1],Q32);
 	}
 	A = B = i = j = 0;
-	v = 3*max(inKeyBytes/4,((2*ROUND_COUNT)+4));
+	if((inKeyBytes/4) >= ((2*ROUND_COUNT)+4)){
+		v = 3*(inKeyBytes/4);
+	}
+	else{
+		v = 3*((2*ROUND_COUNT)+4);
+	}
+//	v = 3*max((int)(inKeyBytes/4),((2*ROUND_COUNT)+4));
 	for(int s=1; s<(v+1); s++){
 		A = S[i] = leftShift(addMod(addMod(S[i],A),B),3);
 		B = L[j] = leftShift(addMod(addMod(L[j],A),B),addMod(A,B));
@@ -172,30 +196,30 @@ void keySchedule(string inKey){
 	}
 }
 
-long addMod(long a, long b){
+unsigned long addMod(unsigned long a, unsigned long b){
 	return (a+b)%4294967296;//(long)pow(2,WORD_SIZE);
 }
 
-long subMod(long a, long b){
+unsigned long subMod(unsigned long a, unsigned long b){
 	return (a-b)%4294967296;//(long)pow(2,WORD_SIZE);
 }
 
-long multMod(long a, long b){
+unsigned long multMod(unsigned long a, unsigned long b){
 	return (a*b)%4294967296;//(long)pow(2,WORD_SIZE);
 }
 
-long leftShift(long a, long b){
-	long long aLong = a;
-	int numBits = log2(WORD_SIZE);
-	int shiftCountMask = 0b0;
+ unsigned long leftShift(unsigned long a, unsigned long b){
+	unsigned long long aLong = a;
+	unsigned int numBits = log2(WORD_SIZE);
+	unsigned int shiftCountMask = 0b0;
 	for(int i=0; i<numBits; i++){
 		shiftCountMask = (shiftCountMask << 1);
 		shiftCountMask++;
 	}	
-	int shiftCount = b & shiftCountMask;
+	unsigned int shiftCount = b & shiftCountMask;
 	
-	long int maskA = 0b0;
-	long int maskB = 0b0;
+	unsigned long int maskA = 0b0;
+	unsigned long int maskB = 0b0;
 
 	for(int i=0; i<WORD_SIZE; i++){
 		maskA = (maskA << 1);
@@ -215,17 +239,17 @@ long leftShift(long a, long b){
 	return (aLong | temp)&0xFFFFFFFF;
 }
 
-long rightShift(long a, long b){
-	long long aLong = a;
-	int numBits = log2(WORD_SIZE);
-	int shiftCountMask = 0b0;
+ unsigned long rightShift(unsigned long a, unsigned long b){
+	unsigned long long aLong = a;
+	unsigned int numBits = log2(WORD_SIZE);
+	unsigned int shiftCountMask = 0b0;
 	for(int i=0; i<numBits; i++){
 		shiftCountMask = (shiftCountMask << 1);
 		shiftCountMask++;
 	}
-	int shiftCount = b & shiftCountMask;
-	long maskA = 0b0;
-	long maskB = 0b0;
+	unsigned int shiftCount = b & shiftCountMask;
+	unsigned long maskA = 0b0;
+	unsigned long maskB = 0b0;
 	for(int i=0; i<(WORD_SIZE-shiftCount); i++){
 		maskA = (maskA << 1);
 		maskA++;
@@ -235,8 +259,8 @@ long rightShift(long a, long b){
 		maskB++;
 	}
 	
-	long remainder = (aLong >> shiftCount) & maskA;
-	long cutoff = (aLong & maskB);
+	unsigned long remainder = (aLong >> shiftCount) & maskA;
+	unsigned long cutoff = (aLong & maskB);
 	cutoff = (cutoff << (WORD_SIZE-shiftCount));
 	return (cutoff | remainder)&0xFFFFFFFF;
 }
@@ -279,9 +303,24 @@ int main(int argc, char** argv){
 		getline(inFile,inString);
 		inString = inString.substr(9);
 		inString = removeWhiteSpace(inString);
+
+		inA = lilEndian32Swap(inA);
+		inB = lilEndian32Swap(inB);
+		inC = lilEndian32Swap(inC);
+		inD = lilEndian32Swap(inC);
+cout << "word1: " << hex << inA << endl;		
+cout << "word2: " << hex << inB << endl;		
+cout << "word3: " << hex << inC << endl;		
+cout << "word4: " << hex << inD << endl;		
+//		cout << "input: " << hex << inA << hex << inB << hex << inC << hex << inD << endl;
+		cout << "key as string: " << inString << endl;
 		keySchedule(inString);
 		encrypt();
 		inFile.close();
+		inA = lilEndian32Swap(inA);
+		inB = lilEndian32Swap(inB);
+		inC = lilEndian32Swap(inC);
+		inD = lilEndian32Swap(inC);
 		ofstream outFile;
 		outFile.open(argv[2]);
 		string outString = "ciphertext: ";
@@ -369,15 +408,26 @@ int main(int argc, char** argv){
 		inString = inString.substr(12);
 		cout << inString << endl;
 		string tempString = removeWhiteSpace(inString);
+
 //		cout << "inString: " << inString << endl;
 //		cout << "tempString: " << tempString << endl;
 		scanInput(tempString);
 		getline(inFile,inString);
 		inString = inString.substr(9);
 		inString = removeWhiteSpace(inString);
+		
+		inA = lilEndian32Swap(inA);
+		inB = lilEndian32Swap(inB);
+		inC = lilEndian32Swap(inC);
+		inD = lilEndian32Swap(inC);
 		keySchedule(inString);
 		decrypt();
 		inFile.close();
+		
+		inA = lilEndian32Swap(inA);
+		inB = lilEndian32Swap(inB);
+		inC = lilEndian32Swap(inC);
+		inD = lilEndian32Swap(inC);
 		ofstream outFile;
 		outFile.open(argv[2]);
 		string outString = "plaintext: ";
