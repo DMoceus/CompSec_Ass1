@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -10,7 +11,8 @@ using namespace std;
 #define P32 0xB7E15163
 #define Q32 0x9E3779B9
 
-
+string removeWhiteSpace(string input);
+void scanInput(string input);
 void decrypt();
 void encrypt();
 int rightShift(int a, int b);
@@ -28,6 +30,12 @@ long inB;
 long inC;
 long inD;
 
+void scanInput(string input){
+	inA = stol(input.substr(0, 8),NULL,16);
+	inB = stol(input.substr(8, 8),NULL,16);
+	inC = stol(input.substr(16,8),NULL,16);
+	inD = stol(input.substr(24,8),NULL,16);
+}
 
 void decrypt(){
 	int t,u;
@@ -81,7 +89,6 @@ void encrypt(){
 	inA = addMod(inA,S[(2*ROUND_COUNT)+2]);
 	inC = addMod(inC,S[(2*ROUND_COUNT)+3]);
 }
-
 
 long long lilEndian32Swap(long long input){
 	long long inBlock1 = (input >> 24) &  0x000000FF;
@@ -211,11 +218,45 @@ int rightShift(int a, int b){
 }
 
 
-
+string removeWhiteSpace(string input){
+	for(int i=0; i<input.length(); i++){
+		if(' ' == input[i]){
+			input.erase(i,1);
+		}
+	}
+	return input;
+}
 
 int main(int argc, char** argv){
 	inA = inB = inC = inD = 0b0;
-	long temp = 0b10000000000000000000000000000000;
+
+	if(argc != 3){
+		cout << "ERROR: EXPECTED INPUT\n./RC6 <input> <output>\n";
+		exit(-1);
+	}
+	
+	ifstream inFile;
+	inFile.open(argv[1]);
+	if(!inFile.is_open()){
+		cout << "ERROR: FILE NOT OPENED CORRECTLY\n";
+		exit(-1);
+	}
+	string inString;
+	getline(inFile,inString);
+	if(0 == inString.compare("Encryption")){
+		cout << "Encryption!\n";
+		getline(inFile,inString);
+		inString = inString.substr(11);
+		cout << inString << endl;
+		string tempString = removeWhiteSpace(inString);
+		cout << "inString: " << inString << endl;
+		cout << "tempString: " << tempString << endl;
+		scanInput(tempString);
+	}
+	
+
+
+/*	long temp = 0b10000000000000000000000000000000;
 	int shiftAmount = 0b001;
 //	cout << temp << endl;
 	long temp2 = leftShift(temp,shiftAmount);
@@ -227,5 +268,5 @@ int main(int argc, char** argv){
 //	cout << rightShiftResult << endl;
 	string keytest = "0123456789abcdef0112233445566778";
 	keySchedule(keytest);
-	return 0;
+*/	return 0;
 }
