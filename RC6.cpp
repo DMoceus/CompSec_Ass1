@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -17,9 +18,9 @@ void decrypt();
 void encrypt();
 int rightShift(int a, int b);
 long leftShift(long a, long b);
-int multMod(int a, int b);
-int subMod(int a, int b);
-int addMod(int a, int b);
+long multMod(long a, long b);
+long subMod(long a, long b);
+long addMod(long a, long b);
 long long lilEndian32Swap(long long input);
 void keySchedule(string inKey);
 
@@ -148,16 +149,16 @@ void keySchedule(string inKey){
 	}
 }
 
-int addMod(int a, int b){
-	return (a+b)%(int)pow(2,WORD_SIZE);
+long addMod(long a, long b){
+	return (a+b)%4294967296;//(long)pow(2,WORD_SIZE);
 }
 
-int subMod(int a, int b){
-	return (a-b)%(int)pow(2,WORD_SIZE);
+long subMod(long a, long b){
+	return (a-b)%4294967296;//(long)pow(2,WORD_SIZE);
 }
 
-int multMod(int a, int b){
-	return (a*b)%(int)pow(2,WORD_SIZE);
+long multMod(long a, long b){
+	return (a*b)%4294967296;//(long)pow(2,WORD_SIZE);
 }
 
 long leftShift(long a, long b){
@@ -185,7 +186,7 @@ long leftShift(long a, long b){
 	maskB = (maskB << WORD_SIZE);
 
 	aLong = (a << shiftCount);
-	long temp = aLong & maskB;
+	unsigned long temp = aLong & maskB;
 	aLong = (aLong & maskA);
 	temp = (temp >> WORD_SIZE);
 	return aLong | temp;
@@ -249,24 +250,33 @@ int main(int argc, char** argv){
 		inString = inString.substr(11);
 		cout << inString << endl;
 		string tempString = removeWhiteSpace(inString);
-		cout << "inString: " << inString << endl;
-		cout << "tempString: " << tempString << endl;
+//		cout << "inString: " << inString << endl;
+//		cout << "tempString: " << tempString << endl;
 		scanInput(tempString);
+		getline(inFile,inString);
+		inString = inString.substr(9);
+		inString = removeWhiteSpace(inString);
+		keySchedule(inString);
+		encrypt();
+		inFile.close();
+		ofstream outFile;
+		outFile.open(argv[2]);
+		string outString = "ciphertext: ";
+		string outputHandler;
+		stringstream ss;
+		ss << hex << inA;
+		ss >> outputHandler;
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		cout << outString << endl;
 	}
 	
 
 
-/*	long temp = 0b10000000000000000000000000000000;
-	int shiftAmount = 0b001;
-//	cout << temp << endl;
-	long temp2 = leftShift(temp,shiftAmount);
-//	cout << temp2 << endl;
-	
-	long rightShiftTest = 0b11110000111100001111000011110000;
-//	cout << rightShiftTest << endl;
-	long rightShiftResult = rightShift(rightShiftTest,shiftAmount);
-//	cout << rightShiftResult << endl;
-	string keytest = "0123456789abcdef0112233445566778";
-	keySchedule(keytest);
-*/	return 0;
+	return 0;
 }
