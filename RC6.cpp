@@ -16,7 +16,7 @@ string removeWhiteSpace(string input);
 void scanInput(string input);
 void decrypt();
 void encrypt();
-int rightShift(int a, int b);
+long rightShift(long a, long b);
 long leftShift(long a, long b);
 long multMod(long a, long b);
 long subMod(long a, long b);
@@ -189,10 +189,10 @@ long leftShift(long a, long b){
 	unsigned long temp = aLong & maskB;
 	aLong = (aLong & maskA);
 	temp = (temp >> WORD_SIZE);
-	return aLong | temp;
+	return (aLong | temp)&0xFFFFFFFF;
 }
 
-int rightShift(int a, int b){
+long rightShift(long a, long b){
 	long long aLong = a;
 	int numBits = log2(WORD_SIZE);
 	int shiftCountMask = 0b0;
@@ -215,7 +215,7 @@ int rightShift(int a, int b){
 	long remainder = (aLong >> shiftCount) & maskA;
 	long cutoff = (aLong & maskB);
 	cutoff = (cutoff << (WORD_SIZE-shiftCount));
-	return cutoff | remainder;
+	return (cutoff | remainder)&0xFFFFFFFF;
 }
 
 
@@ -262,10 +262,72 @@ int main(int argc, char** argv){
 		ofstream outFile;
 		outFile.open(argv[2]);
 		string outString = "ciphertext: ";
-		string outputHandler;
-		stringstream ss;
-		ss << hex << inA;
-		ss >> outputHandler;
+		string outputHandler = "";
+		stringstream aa;
+		aa << hex << inA;
+		aa >> outputHandler;
+		if(inA == 0x0FFFFFFF&inA){
+			outputHandler.insert(0,1,'0');
+		}
+	
+		cout << "inA: " << outputHandler << endl;
+	
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		outString.append(" ");
+		
+		stringstream bb;
+		bb << hex << inB;
+		outputHandler = "";
+		bb >> outputHandler;
+		if(inB == 0x0FFFFFFF&inB){
+			outputHandler.insert(0,1,'0');
+		}
+		cout << "inB: " << outputHandler << endl;
+		
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		outString.append(" ");	
+
+		stringstream cc;
+		cc << hex << inC;
+		outputHandler = "";
+		cc >> outputHandler;
+	
+		if(inC == 0x0FFFFFFF&inC){
+			outputHandler.insert(0,1,'0');
+		}
+
+		cout << "inC: " << outputHandler << endl;
+		
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		outString.append(" ");	
+	
+		stringstream dd;
+		dd << hex << inD;
+		outputHandler = "";
+		dd >> outputHandler;
+		if(inD == 0x0FFFFFFF&inD){
+			outputHandler.insert(0,1,'0');
+		}
+		cout << "inD: " << outputHandler << endl;		
+
 		outString.append(outputHandler.substr(0,2));
 		outString.append(" ");
 		outString.append(outputHandler.substr(2,2));
@@ -274,6 +336,104 @@ int main(int argc, char** argv){
 		outString.append(" ");
 		outString.append(outputHandler.substr(6,2));
 		cout << outString << endl;
+		outFile << outString << endl;
+		outFile.close();
+	}
+	else if(0 == inString.compare("Decryption")){
+
+		cout << "Decryption!\n";
+		getline(inFile,inString);
+		inString = inString.substr(12);
+		cout << inString << endl;
+		string tempString = removeWhiteSpace(inString);
+//		cout << "inString: " << inString << endl;
+//		cout << "tempString: " << tempString << endl;
+		scanInput(tempString);
+		getline(inFile,inString);
+		inString = inString.substr(9);
+		inString = removeWhiteSpace(inString);
+		keySchedule(inString);
+		decrypt();
+		inFile.close();
+		ofstream outFile;
+		outFile.open(argv[2]);
+		string outString = "plaintext: ";
+		string outputHandler = "";
+		stringstream aa;
+		aa << hex << inA;
+		aa >> outputHandler;
+		if(inA == 0x0FFFFFFF&inA){
+			outputHandler.insert(0,1,'0');
+		}
+	
+		cout << "inA: " << outputHandler << endl;
+	
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		outString.append(" ");
+		
+		stringstream bb;
+		bb << hex << inB;
+		outputHandler = "";
+		bb >> outputHandler;
+		if(inB == 0x0FFFFFFF&inB){
+			outputHandler.insert(0,1,'0');
+		}
+		cout << "inB: " << outputHandler << endl;
+		
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		outString.append(" ");	
+
+		stringstream cc;
+		cc << hex << inC;
+		outputHandler = "";
+		cc >> outputHandler;
+	
+		if(inC == 0x0FFFFFFF&inC){
+			outputHandler.insert(0,1,'0');
+		}
+
+		cout << "inC: " << outputHandler << endl;
+		
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		outString.append(" ");	
+	
+		stringstream dd;
+		dd << hex << inD;
+		outputHandler = "";
+		dd >> outputHandler;
+		if(inD == 0x0FFFFFFF&inD){
+			outputHandler.insert(0,1,'0');
+		}
+		cout << "inD: " << outputHandler << endl;		
+
+		outString.append(outputHandler.substr(0,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(2,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(4,2));
+		outString.append(" ");
+		outString.append(outputHandler.substr(6,2));
+		cout << outString << endl;
+		outFile << outString << endl;
+		outFile.close();
 	}
 	
 
